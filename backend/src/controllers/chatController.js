@@ -73,7 +73,7 @@ exports.chatWithMemory = async (req, res) => {
         }
 
         console.log("\n==============================");
-        console.log("👉 ORIGINAL QUERY:", query);
+        console.log("ORIGINAL QUERY:", query);
 
         await Chat.create({ role: "user", text: query });
 
@@ -89,7 +89,7 @@ exports.chatWithMemory = async (req, res) => {
             }
         }
 
-        console.log("👉 FINAL QUERY:", finalQuery);
+        console.log("FINAL QUERY:", finalQuery);
 
         // DIRECT ANSWERS (NO AI)
 
@@ -184,7 +184,7 @@ exports.chatWithMemory = async (req, res) => {
             topResults = activities;
 
         } else if (aggregation) {
-            console.log("🧠 Aggregation query");
+            console.log("Aggregation query");
 
             let typeFilter = {};
 
@@ -254,7 +254,7 @@ exports.chatWithMemory = async (req, res) => {
         res.json({ answer: response });
 
     } catch (err) {
-        console.error("❌ ERROR:", err.message);
+        console.error("ERROR:", err.message);
         res.status(500).json({ error: "Chat failed" });
     }
 };
