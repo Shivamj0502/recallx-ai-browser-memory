@@ -7,8 +7,6 @@ const extractTimeFilter = require("../utils/timeFilter");
 
 // HELPERS
 
-
-// vague
 function isVagueQuery(query) {
     query = query.toLowerCase();
     return (
@@ -21,7 +19,6 @@ function isVagueQuery(query) {
     );
 }
 
-// aggregation
 function isAggregationQuery(query) {
     query = query.toLowerCase();
     return (
@@ -36,7 +33,6 @@ function isAggregationQuery(query) {
     );
 }
 
-// last activity detection
 function isLastActivityQuery(query) {
     query = query.toLowerCase();
     return (
@@ -47,7 +43,6 @@ function isLastActivityQuery(query) {
     );
 }
 
-// last blog/video detection
 function isLastTypedQuery(query, type) {
     query = query.toLowerCase();
 
@@ -62,7 +57,7 @@ function isLastTypedQuery(query, type) {
     return false;
 }
 
-// MAIN FUNCTION
+// MAIN
 
 exports.chatWithMemory = async (req, res) => {
     try {
@@ -91,7 +86,9 @@ exports.chatWithMemory = async (req, res) => {
 
         console.log("FINAL QUERY:", finalQuery);
 
-        // DIRECT ANSWERS (NO AI)
+        // ======================
+        // 🔥 DIRECT ANSWERS
+        // ======================
 
         // LAST WEBSITE
         if (isLastActivityQuery(finalQuery)) {
@@ -134,7 +131,9 @@ exports.chatWithMemory = async (req, res) => {
             });
         }
 
-        //  NORMAL FLOW
+        // ======================
+        // 🔥 NORMAL FLOW
+        // ======================
 
         const vague = isVagueQuery(finalQuery);
         const aggregation = isAggregationQuery(finalQuery);
@@ -142,7 +141,6 @@ exports.chatWithMemory = async (req, res) => {
         let activities = [];
         let queryEmbedding = null;
 
-        // FETCH
         if (vague) {
             activities = await Activity.find()
                 .sort({ createdAt: -1 })
@@ -176,7 +174,9 @@ exports.chatWithMemory = async (req, res) => {
             queryEmbedding = await getEmbedding(finalQuery);
         }
 
-        // SELECTION
+        // ======================
+        // 🔥 SELECTION
+        // ======================
 
         let topResults = [];
 
@@ -207,6 +207,16 @@ exports.chatWithMemory = async (req, res) => {
                 topResults = activities.slice(0, 10);
             }
 
+            // 🔥 CRITICAL FILTER (fix your bug)
+            topResults = topResults.filter(item =>
+                item.url &&
+                !item.url.includes("google.com") &&
+                item.title &&
+                item.title.length > 3 &&
+                item.content &&
+                item.content.length > 10
+            );
+
         } else {
             const scored = activities.map(item => {
                 if (!item.embedding) return null;
@@ -232,17 +242,19 @@ exports.chatWithMemory = async (req, res) => {
             });
         }
 
-        // CONTEXT
+        // ======================
+        // 🔥 CONTEXT
+        // ======================
 
         const context = `
-            Total Results: ${topResults.length}
+Total Results: ${topResults.length}
 
-            ${topResults.map((r, i) =>
-            `Result ${i + 1}:
-            Title: ${r.title}
-            Content: ${r.content}`
-            ).join("\n\n")}
-            `;
+${topResults.map((r, i) =>
+`Result ${i + 1}:
+Title: ${r.title}
+Content: ${r.content}`
+).join("\n\n")}
+`;
 
         const response = await askLLM(query, context, history);
 
