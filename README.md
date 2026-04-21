@@ -28,15 +28,17 @@ Modern browsing history is fragmented and difficult to navigate. RecallX address
 
 ![Chat Demo](./assets/A.png)
 
-### Aggregation Query
+### Blog Retrieval and Aggregation
 
 ![Aggregation](./assets/B.png)
 
-### Recent Activity
+### Recent Video Detection
 
 ![Recent Activity](./assets/C.png)
 
-### Listing
+### Context-Aware Responses with Data Validation
+
+The system answers queries based on actual browsing history and avoids generating responses when relevant data is not available, ensuring accuracy and reliability.
 
 ![Listing](./assets/D.png)
 
